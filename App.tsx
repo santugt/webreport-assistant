@@ -36,7 +36,10 @@ const App: React.FC = () => {
 
     // --- AUTHENTICATION STATE ---
     const [session, setSession] = useState<any>(null);
-    const [isTokenVerified, setIsTokenVerified] = useState(false);
+    // Initialize verification state from persistent storage
+    const [isTokenVerified, setIsTokenVerified] = useState(() => {
+        return localStorage.getItem('is_token_verified') === 'true';
+    });
     const [tokenInput, setTokenInput] = useState('');
     const [authLoading, setAuthLoading] = useState(true);
 
@@ -48,9 +51,15 @@ const App: React.FC = () => {
         });
 
         // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             setSession(session);
             setAuthLoading(false);
+
+            // Clear verification if user signs out
+            if (event === 'SIGNED_OUT') {
+                setIsTokenVerified(false);
+                localStorage.removeItem('is_token_verified');
+            }
         });
 
         return () => subscription.unsubscribe();
@@ -75,6 +84,7 @@ const App: React.FC = () => {
     const handleTokenVerify = async () => {
         if (tokenInput.trim() === 'SANTOSH') {
             setIsTokenVerified(true);
+            localStorage.setItem('is_token_verified', 'true'); // Persist verification
             if (session?.user?.email) {
                 await recordUserLogin(session.user.email, session.user.user_metadata?.full_name || 'Unknown');
             }
