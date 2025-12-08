@@ -1,0 +1,8 @@
+{
+  "name": "Gemini RAG NoteBook",
+  "description": "A client-side Retrieval-Augmented Generation (RAG) system similar to NotebookLM. It ingests technical documents, generates embeddings using Gemini, and performs semantic search to answer questions with citations.",
+  "requestFramePermissions": [],
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
