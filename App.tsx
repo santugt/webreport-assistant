@@ -50,10 +50,27 @@ const App: React.FC = () => {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
+            setAuthLoading(false);
         });
 
         return () => subscription.unsubscribe();
     }, []);
+
+    // Load documents from local IndexedDB on startup
+    useEffect(() => {
+        if (isSupabaseConfigured()) {
+            console.log("Supabase configured.");
+        }
+    }, []);
+
+    // --- PERSISTENCE EFFECT ---
+    useEffect(() => {
+        try {
+            localStorage.setItem('chat_history', JSON.stringify(messages));
+        } catch (e) {
+            console.error("Failed to save chat history", e);
+        }
+    }, [messages]);
 
     const handleTokenVerify = async () => {
         if (tokenInput.trim() === 'SANTOSH') {
@@ -134,20 +151,7 @@ const App: React.FC = () => {
     }
 
     // Load documents from local IndexedDB on startup
-    useEffect(() => {
-        if (isSupabaseConfigured()) {
-            console.log("Supabase configured.");
-        }
-    }, []);
 
-    // --- PERSISTENCE EFFECT ---
-    useEffect(() => {
-        try {
-            localStorage.setItem('chat_history', JSON.stringify(messages));
-        } catch (e) {
-            console.error("Failed to save chat history", e);
-        }
-    }, [messages]);
 
     // --- INDEXING PIPELINE (Chunk -> Embed -> Upload) ---
     const processAndUploadDocument = async (
