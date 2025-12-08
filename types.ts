@@ -49,11 +49,18 @@ export interface RagConfig {
 // We leverage Gemini's large context window (1M tokens) to pass massive amounts of the manual.
 export const DEFAULT_CONFIG: RagConfig = {
   // Massive chunks (8000 chars) to keep large definitions like 'NODEACTION' or 'PERMACTION' intact.
-  chunkSize: 8000, 
+  chunkSize: 8000,
   // Large overlap to ensure context isn't lost at boundaries.
-  chunkOverlap: 1500, 
+  chunkOverlap: 1500,
   // Retrieve 40 chunks. ~320k characters. This is heavy but fits easily in Gemini 1.5/2.5 Flash context.
-  topK: 40, 
+  topK: 40,
   model: 'gemini-2.5-flash',
   enableQueryExpansion: true
 };
+
+export interface UserLog {
+  id: number;
+  email: string;
+  name: string;
+  login_time: string;
+}

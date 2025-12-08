@@ -215,3 +215,28 @@ export const searchSimilarFeedback = async (
     return [];
   }
 }
+
+/**
+ * Record a user login event
+ */
+export const recordUserLogin = async (email: string, name: string) => {
+  if (!supabase) return;
+  try {
+    await supabase.from('user_logins').insert({ email, name });
+  } catch (e) {
+    console.error("Error recording login:", e);
+  }
+};
+
+/**
+ * Fetch all user logs for Admin Panel
+ */
+export const fetchUserLogs = async (): Promise<any[]> => {
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from('user_logins')
+    .select('*')
+    .order('login_time', { ascending: false })
+    .limit(50);
+  return data || [];
+};
