@@ -227,7 +227,36 @@ export const recordUserLogin = async (email: string, name: string) => {
     console.error("Error recording login:", e);
   }
 };
+export const getGlobalSetting = async (key: string): Promise<any> => {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('app_settings')
+      .select('value')
+      .eq('key', key)
+      .single();
 
+    if (error) throw error;
+    return data?.value;
+  } catch (e) {
+    // console.warn(`Failed to fetch setting ${key}:`, e);
+    return null;
+  }
+};
+
+export const setGlobalSetting = async (key: string, value: any) => {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('app_settings')
+      .upsert({ key, value });
+
+    if (error) throw error;
+  } catch (e) {
+    console.error(`Failed to update setting ${key}:`, e);
+    throw e;
+  }
+};
 /**
  * Fetch all user logs for Admin Panel
  */

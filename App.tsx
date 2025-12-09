@@ -10,7 +10,9 @@ import { supabase, searchSupabase, uploadKnowledgeBaseToSupabase, isSupabaseConf
 import { ChatInterface } from './components/ChatInterface';
 import { SourceViewer } from './components/SourceViewer';
 import { AdminPanel } from './components/AdminPanel';
+import { MaintenanceScreen } from './components/MaintenanceScreen';
 import { Layout, FileText, UploadCloud } from 'lucide-react';
+import { getGlobalSetting } from './services/supabaseClient';
 
 const App: React.FC = () => {
     const [documents, setDocuments] = useState<UploadedDocument[]>([]);
@@ -65,6 +67,17 @@ const App: React.FC = () => {
         return () => subscription.unsubscribe();
     }, []);
 
+    // --- MAINTENANCE STATE ---
+    const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
+    const [maintenanceBypassed, setMaintenanceBypassed] = useState(false);
+
+    // Initial maintenance check
+    useEffect(() => {
+        getGlobalSetting('maintenance_mode').then(val => {
+            if (val === true) setIsMaintenanceMode(true);
+        });
+    }, []);
+
     // Load documents from local IndexedDB on startup
     useEffect(() => {
         if (isSupabaseConfigured()) {
@@ -101,6 +114,11 @@ const App: React.FC = () => {
             }
         });
     };
+
+    // --- MAINTENANCE SCREEN ---
+    if (isMaintenanceMode && !maintenanceBypassed) {
+        return <MaintenanceScreen onBypass={() => setMaintenanceBypassed(true)} />;
+    }
 
     // --- SHOW LOGIN SCREEN IF NOT AUTHENTICATED OR TOKEN NOT VERIFIED ---
     if (!session || !isTokenVerified) {

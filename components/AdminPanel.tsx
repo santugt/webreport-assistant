@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { X, ShieldAlert, Database, Settings, UploadCloud, Server, Loader2, CheckCircle, AlertCircle, FileText, PieChart } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, ShieldAlert, Database, Settings, UploadCloud, Server, Loader2, CheckCircle, AlertCircle, FileText, PieChart, Lock, Unlock } from 'lucide-react';
 import { RagConfig, UploadedDocument, UserLog } from '../types';
-import { fetchUserLogs } from '../services/supabaseClient';
+import { fetchUserLogs, getGlobalSetting, setGlobalSetting } from '../services/supabaseClient';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -24,13 +24,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [activeTab, setActiveTab] = useState<'general' | 'logs' | 'danger'>('general');
   const [userLogs, setUserLogs] = useState<UserLog[]>([]);
+  const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
+  const [isSavingSetting, setIsSavingSetting] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       fetchUserLogs().then(logs => setUserLogs(logs));
+      getGlobalSetting('maintenance_mode').then(val => setIsMaintenanceMode(val === true));
     }
   }, [isOpen]);
+
+  const toggleMaintenanceMode = async () => {
+    setIsSavingSetting(true);
+    const newValue = !isMaintenanceMode;
+    await setGlobalSetting('maintenance_mode', newValue);
+    setIsMaintenanceMode(newValue);
+    setIsSavingSetting(false);
+  };
 
   if (!isOpen) return null;
 
