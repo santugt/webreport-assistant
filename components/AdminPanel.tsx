@@ -133,6 +133,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {activeTab === 'general' && (
             <div className="space-y-6">
+
               {/* Maintenance Mode Toggle */}
               <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
