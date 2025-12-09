@@ -127,7 +127,7 @@ const App: React.FC = () => {
         return (
             <div className="flex h-screen items-center justify-center bg-zinc-950 text-white p-4">
                 <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl p-8 shadow-2xl space-y-6 text-center">
-                    <h1 className="text-2xl font-bold tracking-tight">WebReport Assistant</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">WebReport Coder</h1>
                     <p className="text-zinc-400 text-sm">Restricted Access. Please sign in.</p>
 
                     {!session ? (
